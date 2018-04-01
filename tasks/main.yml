@@ -1,2 +1,44 @@
 ---
 # tasks file for mysql
+- name: Install mysql server
+  apt:
+    name: "{{ item  }}"
+    update_cache: yes
+    state: present
+  with_items:
+    - "{{ mysql_packages }}"
+
+- name: Start mysql
+  service:
+    name: "{{ mysql_service_name }}"
+    state: started
+
+
+- name: Install MySQL-python
+  apt:
+   name: python-mysqldb
+   state: present
+  become: yes
+  become_method: sudo
+
+#- name: Create user root
+#  mysql_user:
+#    name: "{{  mysql_user_root }}"
+#    login_user: "{{  mysql_user_root }}"
+#    host: localhost
+#    login_port: 3306
+#    login_host: localhost
+#    password: "{{ mysql_user_root_pwd }}"
+#    state: present
+#  become: yes
+#  become_method: sudo
+
+- name: Create database
+  mysql_db:
+    name: "{{ mysql_database_name }}"
+    login_host: localhost
+    login_password: "{{ mysql_user_root_pwd }}"
+    login_user: "{{ mysql_user_root }}"
+    state: present
+
+
